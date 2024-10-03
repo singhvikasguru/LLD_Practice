@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class BlacklistService {
     private Set<String> blacklist = new HashSet<>(); // In-memory blacklist storage
     private ReadWriteLock lock = new ReentrantReadWriteLock(); // Lock to handle concurrency
-
+//    private ReadWriteLock RWLOCK= new ReentrantReadWriteLock();
     // Load blacklist from a .txt file (admin operation)
     public void loadBlacklist(String filePath) throws IOException {
         lock.writeLock().lock(); // Acquire the write lock for updating the blacklist
