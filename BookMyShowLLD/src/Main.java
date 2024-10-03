@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -17,7 +18,7 @@ public class Main {
     private List<Screen> createScreen() {
 
         List<Screen> screens = new ArrayList<>();
-        Screen screen1 = new Screen();
+        Screen screen1 = new Screen("1");
         screen1.setId("1");
         screen1.setSeats(createSeats());
         screens.add(screen1);
@@ -101,8 +102,8 @@ public class Main {
         inoxTheatre.setScreens(createScreen());
         inoxTheatre.setCity(Banglore);
         List<Shows> inoxShows = new ArrayList<>();
-        Shows inoxMorningShow = createShows(1, inoxTheatre.getScreens().get(0), avengerMovie, 8);
-        Shows inoxEveningShow = createShows(2, inoxTheatre.getScreens().get(0), baahubali, 16);
+        Shows inoxMorningShow = createShows("1", inoxTheatre.getScreens().get(0), avengerMovie, 8);
+        Shows inoxEveningShow = createShows("2", inoxTheatre.getScreens().get(0), baahubali, 16);
         inoxShows.add(inoxMorningShow);
         inoxShows.add(inoxEveningShow);
         inoxTheatre.setShows(inoxShows);
@@ -131,7 +132,7 @@ public class Main {
         List<Movies> movies = movieController.getMoviesForCity(userCity);
 
         //2. select the movie which you want to see. i want to see Baahubali
-        Movies interestedMovie = null;
+        Movies interestedMovie = movieController.getMovieByName("BAAHUBALI");
         for (Movies movie : movies) {
 
             if ((movie.getName()).equals(movieName)) {
@@ -140,29 +141,20 @@ public class Main {
         }
 
         //3. get all show of this movie in Bangalore location
-        Map<Theatre, List<Shows>> showsTheatreWise = theatreController.getAllShow(interestedMovie, userCity);
+        List<Shows> showsTheatreWise_ = theatreController.getAllShows(userCity);
+//        Movies finalInterestedMovie = interestedMovie;
+        List<Shows> showsTheatreWise=showsTheatreWise_.stream().filter(v->v.getMovie().getName().equals("Avengers")).collect(Collectors.toList());
 
         //4. select the particular show user is interested in
-        Map.Entry<Theatre,List<Shows>> entry = showsTheatreWise.entrySet().iterator().next();
-        List<Shows> runningShows = entry.getValue();
-        Shows interestedShow = runningShows.get(0);
+//        Map.Entry<Theatre,List<Shows>> entry = showsTheatreWise.entrySet().iterator().next();
+//        List<Shows> runningShows = entry.getValue();
+        Shows interestedShow = showsTheatreWise.get(0);
 
         //5. select the seat
-        int seatNumber = 30;
-        List<Integer> bookedSeats = interestedShow.getBookedSeatIds();
-        if(!bookedSeats.contains(seatNumber)){
-            bookedSeats.add(seatNumber);
-            //startPayment
-            Booking booking = new Booking();
-            List<Seat> myBookedSeats = new ArrayList<>();
-            for(Seat screenSeat : interestedShow.getScreen().getSeats()) {
-                if(screenSeat.getSeatId() == seatNumber) {
-                    myBookedSeats.add(screenSeat);
-                }
-            }
-            booking.setBookedSeats(myBookedSeats);
-            booking.setShow(interestedShow);
-        } else {
+        if(!interestedShow.getScreen().getSeats().get(30).isOccupied())
+            interestedShow.getScreen().getSeats().get(30).setOccupied(true);
+         else
+         {
             //throw exception
             System.out.println("seat already booked, try again");
             return;
@@ -185,6 +177,7 @@ public class Main {
         Delhi.setId("2");
         Delhi.setName("Delhi");
 
+        obj.createBooking(Banglore, "BAAHUBALI");
         obj.createBooking(Banglore, "BAAHUBALI");
 
         obj.createTheatre(obj.movieController, obj.theatreController, Banglore, Delhi);
