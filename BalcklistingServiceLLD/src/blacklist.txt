@@ -1,0 +1,3 @@
+http://example.com/bad
+http://malicious-site.com
+http://phishing-site.com
