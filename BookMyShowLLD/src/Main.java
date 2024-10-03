@@ -68,6 +68,9 @@ public class Main {
         baahubali.setId("2");
         baahubali.setName("BAAHUBALI");
         baahubali.setDuration(180);
+
+//        movieController.addMovies(avengers);
+//        movieController.addMovies();
     }
 
     private void initialize() {
@@ -177,9 +180,25 @@ public class Main {
         Delhi.setId("2");
         Delhi.setName("Delhi");
 
+        Movies avengers = new Movies();
+        avengers.setId("1");
+        avengers.setName("AVENGERS");
+        avengers.setDuration(128);
+
+        //create Movies2
+        Movies baahubali = new Movies();
+        baahubali.setId("2");
+        baahubali.setName("BAAHUBALI");
+        baahubali.setDuration(180);
+//        obj.movieController.addMovies(Banglore, b);
+
+        obj.movieController.addMovies(Banglore, avengers);
+        obj.movieController.addMovies(Banglore, baahubali);
+
+        obj.createTheatre(obj.movieController, obj.theatreController, Banglore, Delhi);
+
         obj.createBooking(Banglore, "BAAHUBALI");
         obj.createBooking(Banglore, "BAAHUBALI");
 
-        obj.createTheatre(obj.movieController, obj.theatreController, Banglore, Delhi);
     }
 }
