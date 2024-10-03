@@ -1,59 +1,34 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+public class RequestHandler {
+    private BlacklistService blacklistService;
 
-public class BlacklistService {
-    private Set<String> blacklist = new HashSet<>(); // In-memory blacklist storage
-    private ReadWriteLock lock = new ReentrantReadWriteLock(); // Lock to handle concurrency
+    public RequestHandler(BlacklistService blacklistService) {
+        this.blacklistService = blacklistService;
+    }
 
-    // Load blacklist from a .txt file (admin operation)
-    public void loadBlacklist(String filePath) throws IOException {
-        lock.writeLock().lock(); // Acquire the write lock for updating the blacklist
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            blacklist.clear(); // Clear the existing blacklist
-            String url;
-            while ((url = br.readLine()) != null) {
-                blacklist.add(url.trim());
-            }
-            System.out.println("Blacklist loaded successfully from file: " + filePath);
-        } finally {
-            lock.writeLock().unlock(); // Release the write lock
+    // Handle the request to access a URL
+    public String handleRequest(String url) {
+        if (blacklistService.isBlacklisted(url)) {
+            return blockRequest(url);
+        } else {
+            return allowRequest(url);
         }
     }
 
-    // Check if a URL is blacklisted (user request)
-    public boolean isBlacklisted(String url) {
-        lock.readLock().lock(); // Acquire the read lock
-        try {
-            return blacklist.contains(url);
-        } finally {
-            lock.readLock().unlock(); // Release the read lock
-        }
+    // If the URL is blacklisted, block it
+    private String blockRequest(String url) {
+        logRequest(url, true); // Log the blocked request
+        return "403 Forbidden - URL is blacklisted";
     }
 
-    // Add a URL to the blacklist manually (admin operation)
-    public void addToBlacklist(String url) {
-        lock.writeLock().lock(); // Acquire the write lock for modifying the blacklist
-        try {
-            blacklist.add(url.trim());
-            System.out.println("URL added to blacklist: " + url);
-        } finally {
-            lock.writeLock().unlock(); // Release the write lock
-        }
+    // If the URL is not blacklisted, allow it
+    private String allowRequest(String url) {
+        logRequest(url, false); // Log the allowed request
+        return "200 OK - URL is allowed";
     }
 
-    // Remove a URL from the blacklist manually (admin operation)
-    public void removeFromBlacklist(String url) {
-        lock.writeLock().lock(); // Acquire the write lock
-        try {
-            blacklist.remove(url.trim());
-            System.out.println("URL removed from blacklist: " + url);
-        } finally {
-            lock.writeLock().unlock(); // Release the write lock
-        }
+    // Log the request result
+    private void logRequest(String url, boolean isBlocked) {
+        String status = isBlocked ? "Blocked" : "Allowed";
+        System.out.println("Request to URL: " + url + " - " + status);
     }
 }
