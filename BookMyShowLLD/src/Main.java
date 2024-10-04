@@ -146,7 +146,7 @@ public class Main {
         //3. get all show of this movie in Bangalore location
         List<Shows> showsTheatreWise_ = theatreController.getAllShows(userCity);
 //        Movies finalInterestedMovie = interestedMovie;
-        List<Shows> showsTheatreWise=showsTheatreWise_.stream().filter(v->v.getMovie().getName().equals("Avengers")).collect(Collectors.toList());
+        List<Shows> showsTheatreWise=showsTheatreWise_.stream().filter(v->v.getMovie().getName().equals("BAAHUBALI")).collect(Collectors.toList());
 
         //4. select the particular show user is interested in
 //        Map.Entry<Theatre,List<Shows>> entry = showsTheatreWise.entrySet().iterator().next();
